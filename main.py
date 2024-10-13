@@ -1,7 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, FSInputFile
 
 API_TOKEN = '7091257664:AAFYbb09SL99Y15b3iS3gUAemSs9gDnySgg'
 
@@ -11,43 +11,30 @@ dp = Dispatcher()
 # Добавляем команды в меню
 async def set_commands(bot: Bot):
     commands = [
-        types.BotCommand(command="/start", description="Запустить бота"),
-        types.BotCommand(command="/help", description="Помощь"),
-        types.BotCommand(command="/menu", description="Открыть меню")
+        types.BotCommand(command="/start", description="Запустить бота | Главное меню")
     ]
     await bot.set_my_commands(commands)
 
-@dp.message(Command("menu"))
-async def menu_command(message: types.Message):
-    # Создаем обычные кнопки под полем ввода
-    reply_keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="Кнопка 1")],
-            [KeyboardButton(text="Кнопка 2")],
-            [KeyboardButton(text="Кнопка 3"), KeyboardButton(text="Кнопка 4")]  # Две кнопки в одной строке
-        ],
-        resize_keyboard=True  # Уменьшаем размер кнопок
-    )
-
-    # Отправляем сообщение с обычными кнопками
-    await message.answer("Выберите действие:", reply_markup=reply_keyboard)
-
-# Инлайн-кнопки под сообщением
 @dp.message(Command("start"))
 async def start_command(message: types.Message):
-    # Создаем инлайн-клавиатуру с кнопками
-    inline_kb_list = [
-        [InlineKeyboardButton(text="Мой хабр", callback_data="Мой хабр")],
-        [InlineKeyboardButton(text="Тук тук", callback_data="Тук тук")],
-        [
-            InlineKeyboardButton(text="Мой хабр", url='https://habr.com/ru/users/yakvenalex/'),
-            InlineKeyboardButton(text="Мой Telegram", url='tg://resolve?domain=yakvenalexx')
-        ],
-    ]
-    inline_keyboard = InlineKeyboardMarkup(row_width=2, inline_keyboard=inline_kb_list)  # Указываем, что максимум 2 кнопки в строке
+    user_name = message.from_user.first_name  # Имя пользователя
+    gif_path = 'media/Welcome.gif'  # Относительный путь к GIF
 
-    # Отправляем сообщение с инлайн-кнопками
-    await message.answer("Выберите страну:", reply_markup=inline_keyboard)
+    # Создаем обычные кнопки под полем ввода
+    keyboard = [
+        [InlineKeyboardButton(text="💲 Курс доллара", callback_data="dollar_cost")],
+        [InlineKeyboardButton(text="💱 Выбрать пару обмена", callback_data="dollar_cost")],
+        [InlineKeyboardButton(text="📞 Связаться со мной", url="https://example.com")],
+        [
+            InlineKeyboardButton(text="👤 Профиль", callback_data="dollar_cost"),
+            InlineKeyboardButton(text="ℹ️ О FoyDyabaBot", callback_data="dollar_cost")
+         ]  # Две кнопки в одной строке
+    ]
+    inline_keyboard = InlineKeyboardMarkup(row_width=2, inline_keyboard=keyboard)
+
+    # Отправляем сообщение с обычными кнопками
+    gif_file = FSInputFile(gif_path)
+    await message.answer_animation(animation=gif_file, caption=f"👋 Рад видеть тебя, @{user_name}", reply_markup=inline_keyboard)
 
 # Хэндлер для обработки нажатий на инлайн-кнопки
 @dp.callback_query()
