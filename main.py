@@ -1,4 +1,5 @@
 import asyncio
+import requests
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, FSInputFile
@@ -23,11 +24,11 @@ async def start_command(message: types.Message):
     # Создаем обычные кнопки под полем ввода
     keyboard = [
         [InlineKeyboardButton(text="💲 Курс доллара", callback_data="dollar_cost")],
-        [InlineKeyboardButton(text="💱 Выбрать пару обмена", callback_data="dollar_cost")],
+        [InlineKeyboardButton(text="💱 Выбрать пару обмена", callback_data="switch")],
         [InlineKeyboardButton(text="📞 Связаться со мной", url="https://example.com")],
         [
-            InlineKeyboardButton(text="👤 Профиль", callback_data="dollar_cost"),
-            InlineKeyboardButton(text="ℹ️ О FoyDyabaBot", callback_data="dollar_cost")
+            InlineKeyboardButton(text="👤 Профиль", callback_data="profile"),
+            InlineKeyboardButton(text="ℹ️ О FoyDyabaBot", callback_data="info")
          ]  # Две кнопки в одной строке
     ]
     inline_keyboard = InlineKeyboardMarkup(row_width=2, inline_keyboard=keyboard)
@@ -37,6 +38,17 @@ async def start_command(message: types.Message):
     await message.answer_animation(animation=gif_file, caption=f"👋 Рад видеть тебя, @{user_name}", reply_markup=inline_keyboard)
 
 # Хэндлер для обработки нажатий на инлайн-кнопки
+@dp.callback_query(lambda query: query.data == "dollar_cost")
+async def dollar_cost(query: types.CallbackQuery):
+    response = requests.get('https://api.binance.com/api/v3/ticker/price?symbol=USDTRUB')
+    # Преобразование ответа в JSON
+    data = response.json()
+    # Извлечение нужного свойства
+    cost = float(data['price'])
+    await query.message.answer(f"Стоимость доллара по API бинанса: {cost:.2f} RUB")
+    await query.answer()  # Чтобы закрыть индикатор загрузки
+
+
 @dp.callback_query()
 async def handle_callback(query: types.CallbackQuery):
     await query.message.answer(f"Вы выбрали {query.data}")
