@@ -2,12 +2,15 @@ import asyncio
 import requests
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, FSInputFile
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, FSInputFile, \
+    WebAppInfo
 
 API_TOKEN = '7091257664:AAFYbb09SL99Y15b3iS3gUAemSs9gDnySgg'
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
+
+web_app = WebAppInfo(url="https://www.google.com")
 
 # Добавляем команды в меню
 async def set_commands(bot: Bot):
@@ -24,7 +27,7 @@ async def start_command(message: types.Message):
     # Создаем обычные кнопки под полем ввода
     keyboard = [
         [InlineKeyboardButton(text="💲 Курс доллара", callback_data="dollar_cost")],
-        [InlineKeyboardButton(text="💱 Выбрать пару обмена", callback_data="switch")],
+        [InlineKeyboardButton(text="💱 Выбрать пару обмена", web_app=web_app)],
         [InlineKeyboardButton(text="📞 Связаться со мной", url="https://example.com")],
         [
             InlineKeyboardButton(text="👤 Профиль", callback_data="profile"),
