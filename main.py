@@ -10,7 +10,7 @@ API_TOKEN = '7091257664:AAFYbb09SL99Y15b3iS3gUAemSs9gDnySgg'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-web_app = WebAppInfo(url="https://www.google.com")
+web_app = WebAppInfo(url="https://bitflick.exchange/ru")
 
 # Добавляем команды в меню
 async def set_commands(bot: Bot):
