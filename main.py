@@ -43,12 +43,18 @@ async def start_command(message: types.Message):
 # Хэндлер для обработки нажатий на инлайн-кнопки
 @dp.callback_query(lambda query: query.data == "dollar_cost")
 async def dollar_cost(query: types.CallbackQuery):
-    response = requests.get('https://api.binance.com/api/v3/ticker/price?symbol=USDTRUB')
+    response = requests.get('https://api.rapira.net/market/symbol-thumb')
     # Преобразование ответа в JSON
     data = response.json()
+    # Поиск индекса с помощью next и генератора
+    index = next((i for i, obj in enumerate(data) if obj["symbol"] == "USDT/RUB"), -1)
     # Извлечение нужного свойства
-    cost = float(data['price'])
-    await query.message.answer(f"Стоимость доллара по API бинанса: {cost:.2f} RUB")
+    cost = '(ошибка получения цены)'
+    if index != -1:
+        cost = float(data[index]["close"])
+        cost = f"{cost:.2f}"
+
+    await query.message.answer(f"Стоимость доллара по API rapira.net : {cost} RUB")
     await query.answer()  # Чтобы закрыть индикатор загрузки
 
 
